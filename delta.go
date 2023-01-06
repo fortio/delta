@@ -23,7 +23,11 @@ import (
 	"fortio.org/fortio/version"
 )
 
-var fullVersion = flag.Bool("version", false, "Show full version info and exit.")
+var (
+	fullVersion = flag.Bool("version", false, "Show full version info and exit.")
+	newCmd      = flag.String("new", "", "`Command` to run for each entry unique to new file")
+	goneCmd     = flag.String("gone", "", "`Command` to run for each entry missing in new file")
+)
 
 func usage(msg string) {
 	_, _ = fmt.Fprintf(os.Stderr, "Fortio delta %s usage:\n\t%s [flags] old new\nflags:\n",
@@ -47,5 +51,5 @@ func main() {
 	if len(flag.Args()) != 2 {
 		usage("Need 2 arguments (old and new files)")
 	}
-	log.Infof("Fortio delta %s started", longV)
+	log.Infof("Fortio delta %s started - will run %q on new entries, and %q on missing ones", longV, *newCmd, *goneCmd)
 }
