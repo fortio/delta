@@ -1,0 +1,5 @@
+fortio.org/assert v1.1.2 h1:t6WGDqPD5VFrUvx30U0+3mgXXcoPonrdKqt0vfJHn8E=
+fortio.org/fortio v1.38.4 h1:HkVsu9E4emMU+i2D2HjPll1Dbu5IqCRTeKeoiYWxFWA=
+fortio.org/fortio v1.38.4/go.mod h1:xZTReCI6wlPJQN+JssVO6jsqXJV2vC32dcZJrUaqmcU=
+golang.org/x/exp v0.0.0-20221111204811-129d8d6c17ab h1:1S7USr8/C0Sgk4egxq4zZ07zYt2Xh1IiFp8hUMXH/us=
+golang.org/x/exp v0.0.0-20221111204811-129d8d6c17ab/go.mod h1:CxIveKay+FTh1D0yPZemJVgC/95VzuuOLq5Qi4xnoYc=
