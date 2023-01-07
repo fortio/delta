@@ -7,9 +7,9 @@ go install github.com/fortio/delta@latest
 
 ## Usage
 
-delta -new "echo NEW: " -gone "echo REMOVED: " oldFile newFile
+delta -b "echo NEW:" -a "echo REMOVED:" oldFile newFile
 
-if `old` is
+if `oldFile` is
 ```
 old1
 old2
@@ -17,7 +17,7 @@ gone1
 old3
 ```
 
-and `new` is
+and `newFile` is
 ```
 new1
 old1
@@ -28,7 +28,7 @@ new2
 
 will output
 ```
+REMOVED: gone1
 NEW: new1
 NEW: new2
-REMOVED: gone1
 ```
