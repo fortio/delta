@@ -19,6 +19,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sort"
 
 	"fortio.org/fortio/log"
 	"fortio.org/fortio/version"
@@ -26,12 +27,12 @@ import (
 
 var (
 	fullVersion = flag.Bool("version", false, "Show full version info and exit.")
-	newCmd      = flag.String("new", "", "`Command` to run for each entry unique to new file")
-	goneCmd     = flag.String("gone", "", "`Command` to run for each entry missing in new file")
+	aCmd        = flag.String("a", "", "`Command` to run for each entry unique to file A")
+	bCmd        = flag.String("b", "", "`Command` to run for each entry unique to file B")
 )
 
 func usage(msg string) {
-	_, _ = fmt.Fprintf(os.Stderr, "Fortio delta %s usage:\n\t%s [flags] old new\nflags:\n",
+	_, _ = fmt.Fprintf(os.Stderr, "Fortio delta %s usage:\n\t%s [flags] fileA fileB\nflags:\n",
 		version.Short(),
 		os.Args[0])
 	flag.PrintDefaults()
@@ -58,8 +59,31 @@ func toMap(filename string) (map[string]bool, error) {
 	return m, nil
 }
 
+func removeCommon(a, b map[string]bool) {
+	if len(a) > len(b) {
+		a, b = b, a
+	}
+	for e := range a {
+		if _, found := b[e]; found {
+			log.LogVf("in both sets: %q", e)
+			delete(a, e)
+			delete(b, e)
+		}
+	}
+}
+
+func sortedKeys(m map[string]bool) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
 func main() {
 	flag.CommandLine.Usage = func() { usage("") }
+	log.SetFlagDefaultsForClientTools()
 	flag.Parse()
 	_, longV, fullV := version.FromBuildInfo()
 	if *fullVersion {
@@ -69,39 +93,30 @@ func main() {
 	if len(flag.Args()) != 2 {
 		usage("Need 2 arguments (old and new files)")
 	}
-	log.Infof("Fortio delta %s started - will run %q on new entries, and %q on missing ones", longV, *newCmd, *goneCmd)
+	log.Infof("Fortio delta %s started - will run %q on new entries, and %q on missing ones", longV, *aCmd, *bCmd)
 	// read file content into map
-	oldSet, err := toMap(flag.Arg(0))
+	aSet, err := toMap(flag.Arg(0))
 	if err != nil {
 		log.Fatalf("Error reading old file: %v", err)
 	}
-	newSet, err := toMap(flag.Arg(1))
+	bSet, err := toMap(flag.Arg(1))
 	if err != nil {
 		log.Fatalf("Error reading new file: %v", err)
 	}
-	// intersect
-	for o := range oldSet {
-		if _, found := newSet[o]; found {
-			log.LogVf("old loop: %q is in both", o)
-			// mark as present in both - tradeoff of mutating to avoid extra lookup later (even though o(1))
-			// check if mutating the value is better than removing the entry (todo benchmark)
-			newSet[o] = false
-			continue
-		}
-		log.Infof("Missing %q", o)
-		if *goneCmd != "" {
-			log.Infof("Running %s %s", *goneCmd, o)
+	// remove common entries
+	removeCommon(aSet, bSet)
+	onlyInA := sortedKeys(aSet)
+	for _, a := range onlyInA {
+		log.Infof("Only in A: %q", a)
+		if *aCmd != "" {
+			log.Infof("Running %s %s", *aCmd, a)
 		}
 	}
-	// is there a more efficient way to get only the "true" keys
-	for n, v := range newSet {
-		if !v {
-			log.LogVf("new loop: %q already known to be in both", n)
-			continue
-		}
-		log.Infof("New %q", n)
-		if *newCmd != "" {
-			log.Infof("Running %s %s", *newCmd, n)
+	onlyInB := sortedKeys(bSet)
+	for _, b := range onlyInB {
+		log.Infof("Only in B: %q", b)
+		if *bCmd != "" {
+			log.Infof("Running %s %s", *bCmd, b)
 		}
 	}
 }
