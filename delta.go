@@ -15,6 +15,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"os"
@@ -40,6 +41,23 @@ func usage(msg string) {
 	os.Exit(1)
 }
 
+func toMap(filename string) (map[string]bool, error) {
+	log.LogVf("Reading %q", filename)
+	f, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	m := make(map[string]bool)
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		entry := sc.Text()
+		log.LogVf("  adding %q", entry)
+		m[entry] = true
+	}
+	return m, nil
+}
+
 func main() {
 	flag.CommandLine.Usage = func() { usage("") }
 	flag.Parse()
@@ -52,4 +70,38 @@ func main() {
 		usage("Need 2 arguments (old and new files)")
 	}
 	log.Infof("Fortio delta %s started - will run %q on new entries, and %q on missing ones", longV, *newCmd, *goneCmd)
+	// read file content into map
+	oldSet, err := toMap(flag.Arg(0))
+	if err != nil {
+		log.Fatalf("Error reading old file: %v", err)
+	}
+	newSet, err := toMap(flag.Arg(1))
+	if err != nil {
+		log.Fatalf("Error reading new file: %v", err)
+	}
+	// intersect
+	for o := range oldSet {
+		if _, found := newSet[o]; found {
+			log.LogVf("old loop: %q is in both", o)
+			// mark as present in both - tradeoff of mutating to avoid extra lookup later (even though o(1))
+			// check if mutating the value is better than removing the entry (todo benchmark)
+			newSet[o] = false
+			continue
+		}
+		log.Infof("Missing %q", o)
+		if *goneCmd != "" {
+			log.Infof("Running %s %s", *goneCmd, o)
+		}
+	}
+	// is there a more efficient way to get only the "true" keys
+	for n, v := range newSet {
+		if !v {
+			log.LogVf("new loop: %q already known to be in both", n)
+			continue
+		}
+		log.Infof("New %q", n)
+		if *newCmd != "" {
+			log.Infof("Running %s %s", *newCmd, n)
+		}
+	}
 }
