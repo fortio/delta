@@ -34,16 +34,16 @@ var (
 	shortV      string
 )
 
-func usage(msg string) {
+func usage(msg string, args ...any) {
 	_, _ = fmt.Fprintf(os.Stderr, "Fortio delta %s usage:\n\t%s [flags] fileA fileB\nflags:\n",
 		shortV,
 		os.Args[0])
 	flag.PrintDefaults()
-	_, _ = fmt.Fprintf(os.Stderr, "Command flags (-a and -b) are space separeted and the lines are passed as the last argument")
+	_, _ = fmt.Fprintf(os.Stderr, "Command flags (-a and -b) are space separeted and the lines are passed as the last argument\n")
 	if msg != "" {
-		fmt.Fprintln(os.Stderr, msg)
+		fmt.Fprintf(os.Stderr, msg, args...)
+		fmt.Fprintln(os.Stderr)
 	}
-	os.Exit(1)
 }
 
 func toMap(filename string) (map[string]bool, error) {
@@ -65,6 +65,7 @@ func toMap(filename string) (map[string]bool, error) {
 
 func removeCommon(a, b map[string]bool) {
 	if len(a) > len(b) {
+		log.LogVf("Swapping A and B iteration order as B is smaller")
 		a, b = b, a
 	}
 	for e := range a {
@@ -97,6 +98,10 @@ func runCmd(cmd0 string, args ...string) {
 }
 
 func main() {
+	os.Exit(Main())
+}
+
+func Main() int {
 	flag.CommandLine.Usage = func() { usage("") }
 	log.SetFlagDefaultsForClientTools()
 	sV, longV, fullV := version.FromBuildInfo()
@@ -104,10 +109,12 @@ func main() {
 	flag.Parse()
 	if *fullVersion {
 		fmt.Print(fullV)
-		os.Exit(0)
+		return 0
 	}
-	if len(flag.Args()) != 2 {
-		usage("Need 2 arguments (old and new files)")
+	numArgs := len(flag.Args())
+	if numArgs != 2 {
+		usage("Need 2 arguments (old and new files), got %d (%v)", numArgs, flag.Args())
+		return 1
 	}
 	cmdList := strings.Split(*aCmd, " ")
 	aCmd0 := cmdList[0]
@@ -126,11 +133,13 @@ func main() {
 	// read file content into map
 	aSet, err := toMap(flag.Arg(0))
 	if err != nil {
-		log.Fatalf("Error reading old file: %v", err)
+		log.Errf("Error reading file A: %v", err)
+		return 1
 	}
 	bSet, err := toMap(flag.Arg(1))
 	if err != nil {
-		log.Fatalf("Error reading new file: %v", err)
+		log.Errf("Error reading file B: %v", err)
+		return 1
 	}
 	// remove common entries
 	removeCommon(aSet, bSet)
@@ -150,4 +159,5 @@ func main() {
 			runCmd(bCmd0, bArgs...)
 		}
 	}
+	return 0
 }

@@ -1,0 +1,66 @@
+# testscript framework tests for delta command line
+
+# Basic usage test
+! delta
+! stdout .
+stderr 'Need 2 arguments'
+
+# -version
+delta -version
+stdout 'path	github.com/fortio/delta'
+! stderr .
+
+# -foo (bad flag)
+! delta -foo
+! stdout .
+stderr 'flag provided but not defined: -foo'
+
+# non existent input file A
+! delta foo1 foo2
+stderr 'E Error reading file A: open foo1: no such file or directory'
+! stdout .
+
+# non existent input file B
+! delta oldFile foo2
+stderr 'E Error reading file B: open foo2: no such file or directory'
+! stdout .
+
+# positive test (includes order of A/B iteration swap)
+delta -loglevel verbose -b 'echo NEW:' -a 'echo REMOVED:' oldFile newFile
+cmp stdout expected1
+stderr 'Fortio delta.*started - will run "echo REMOVED:" on entries unique to oldFile, and "echo NEW:" on ones unique to newFile'
+stderr 'Swapping A and B iteration order as B is smaller'
+
+# swapping a and b test
+delta -loglevel verbose -a 'echo NEW:' -b 'echo REMOVED:'  newFile oldFile
+cmp stdout expected2
+! stderr 'Swapping A and B iteration order as B is smaller'
+
+-- expected1 --
+REMOVED: gone 2
+REMOVED: gone1
+REMOVED: goneA
+REMOVED: goneZ
+NEW: new1
+NEW: new2
+-- expected2 --
+NEW: new1
+NEW: new2
+REMOVED: gone 2
+REMOVED: gone1
+REMOVED: goneA
+REMOVED: goneZ
+-- oldFile --
+goneZ
+old1
+goneA
+old2
+gone1
+old3
+gone 2
+-- newFile --
+new1
+old1
+old2
+old3
+new2

@@ -32,3 +32,5 @@ REMOVED: gone1
 NEW: new1
 NEW: new2
 ```
+
+See also [delta.txtar](delta.txtar) for examples (tests)
