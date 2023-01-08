@@ -36,6 +36,14 @@ delta -loglevel verbose -a 'echo NEW:' -b 'echo REMOVED:'  newFile oldFile
 cmp stdout expected2
 ! stderr 'Swapping A and B iteration order as B is smaller'
 
+# command errors out (with -a)
+! delta -a false oldFile newFile
+stderr 'E Error running .*false gone 2: exit status 1'
+
+# command errors out (with -b)
+! delta -b false oldFile newFile
+stderr 'E Error running .*false new1: exit status 1'
+
 -- expected1 --
 REMOVED: gone 2
 REMOVED: gone1

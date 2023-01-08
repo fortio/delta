@@ -86,21 +86,26 @@ func sortedKeys(m map[string]bool) []string {
 	return keys
 }
 
-func runCmd(cmd0 string, args ...string) {
+func runCmd(cmd0 string, args ...string) bool {
 	cmd := exec.Command(cmd0, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	log.Infof("Running (%d args) %s", len(args), cmd.String())
 	err := cmd.Run()
 	if err != nil {
-		log.Fatalf("Error running %v: %v", cmd, err)
+		log.Errf("Error running %v: %v", cmd, err)
+		return false
 	}
+	return true
 }
 
 func main() {
 	os.Exit(Main())
 }
 
+// Main is the main function for the delta tool so it can be called from testscript.
+// Note that we could use the (new in 1.39) log.Fatalf that doesn't panic for cli tools but
+// it calling os.Exit directly means it doesn't work with the code coverage from `testscript`
 func Main() int {
 	flag.CommandLine.Usage = func() { usage("") }
 	log.SetFlagDefaultsForClientTools()
@@ -148,7 +153,9 @@ func Main() int {
 		log.Infof("Only in A: %q", a)
 		if hasACmd {
 			aArgs[aLen] = a
-			runCmd(aCmd0, aArgs...)
+			if !runCmd(aCmd0, aArgs...) {
+				return 1
+			}
 		}
 	}
 	onlyInB := sortedKeys(bSet)
@@ -156,7 +163,9 @@ func Main() int {
 		log.Infof("Only in B: %q", b)
 		if hasBCmd {
 			bArgs[bLen] = b
-			runCmd(bCmd0, bArgs...)
+			if !runCmd(bCmd0, bArgs...) {
+				return 1
+			}
 		}
 	}
 	return 0
