@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/github/fortio/delta/branch/main/graph/badge.svg?token=LONYZDFQ7C)](https://codecov.io/github/fortio/delta)
+
 # Delta
 Diff 2 sets and apply command to deltas
 
