@@ -1,6 +1,6 @@
 fortio.org/assert v1.1.2 h1:t6WGDqPD5VFrUvx30U0+3mgXXcoPonrdKqt0vfJHn8E=
-fortio.org/fortio v1.39.0-pre14 h1:wsXVRPu/7gQHy1Kpqu6CiUJgQe4QG0wNnUfLtTUvv0Y=
-fortio.org/fortio v1.39.0-pre14/go.mod h1:4DhI17BkI3sU0DR4Z2HwochdpphTae+8NgZwWy6epRk=
+fortio.org/fortio v1.39.0-pre15 h1:C0x89PT81qmpNOwndkCBZtuyLehnnJZS+VaG8I+tr+w=
+fortio.org/fortio v1.39.0-pre15/go.mod h1:4DhI17BkI3sU0DR4Z2HwochdpphTae+8NgZwWy6epRk=
 github.com/pkg/diff v0.0.0-20210226163009-20ebb0f2a09e h1:aoZm08cpOy4WuID//EZDgcC4zIxODThtZNPirFr42+A=
 github.com/pkg/diff v0.0.0-20210226163009-20ebb0f2a09e/go.mod h1:pJLUxLENpZxwdsKMEsNbx1VGcRFpLqf3715MtcvvzbA=
 github.com/rogpeppe/go-internal v1.9.0 h1:73kH8U+JUqXU8lRuOHeVHaa/SZPifC7BkcraZVejAe8=
