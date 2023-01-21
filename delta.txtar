@@ -17,12 +17,12 @@ stderr 'flag provided but not defined: -foo'
 
 # non existent input file A
 ! delta foo1 foo2
-stderr 'E Error reading file A: open foo1: no such file or directory'
+stderr 'F Error reading file A: open foo1: no such file or directory'
 ! stdout .
 
 # non existent input file B
 ! delta oldFile foo2
-stderr 'E Error reading file B: open foo2: no such file or directory'
+stderr 'F Error reading file B: open foo2: no such file or directory'
 ! stdout .
 
 # positive test (includes order of A/B iteration swap)

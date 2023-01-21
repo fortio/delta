@@ -138,13 +138,11 @@ func Main() int {
 	// read file content into map
 	aSet, err := toMap(flag.Arg(0))
 	if err != nil {
-		log.Errf("Error reading file A: %v", err)
-		return 1
+		return log.FErrf("Error reading file A: %v", err)
 	}
 	bSet, err := toMap(flag.Arg(1))
 	if err != nil {
-		log.Errf("Error reading file B: %v", err)
-		return 1
+		return log.FErrf("Error reading file B: %v", err)
 	}
 	// remove common entries
 	removeCommon(aSet, bSet)
