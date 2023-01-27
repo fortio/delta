@@ -106,6 +106,7 @@ func main() {
 // Main is the main function for the delta tool so it can be called from testscript.
 // Note that we could use the (new in 1.39) log.Fatalf that doesn't panic for cli tools but
 // it calling os.Exit directly means it doesn't work with the code coverage from `testscript`
+// but there is now (in 1.40) log.FErrf for that (no exit Fatalf).
 func Main() int {
 	flag.CommandLine.Usage = func() { usage("") }
 	log.SetFlagDefaultsForClientTools()
