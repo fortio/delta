@@ -3,10 +3,10 @@
 # Basic usage test
 ! delta
 ! stdout .
-stderr 'Need 2 arguments'
+stderr 'Exactly 2 arguments expected, got 0'
 
-# -version
-delta -version
+# buildinfo
+delta buildinfo
 stdout 'path	github.com/fortio/delta'
 ! stderr .
 

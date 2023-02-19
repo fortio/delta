@@ -17,34 +17,19 @@ package main
 import (
 	"bufio"
 	"flag"
-	"fmt"
 	"os"
 	"os/exec"
 	"sort"
 	"strings"
 
-	"fortio.org/fortio/log"
-	"fortio.org/fortio/version"
+	"fortio.org/cli"
+	"fortio.org/log"
 )
 
 var (
-	fullVersion = flag.Bool("version", false, "Show full version info and exit.")
-	aCmd        = flag.String("a", "", "`Command` to run for each entry unique to file A")
-	bCmd        = flag.String("b", "", "`Command` to run for each entry unique to file B")
-	shortV      string
+	aCmd = flag.String("a", "", "`Command` to run for each entry unique to file A")
+	bCmd = flag.String("b", "", "`Command` to run for each entry unique to file B")
 )
-
-func usage(msg string, args ...any) {
-	_, _ = fmt.Fprintf(os.Stderr, "Fortio delta %s usage:\n\t%s [flags] fileA fileB\nflags:\n",
-		shortV,
-		os.Args[0])
-	flag.PrintDefaults()
-	_, _ = fmt.Fprintf(os.Stderr, "Command flags (-a and -b) are space separeted and the lines are passed as the last argument\n")
-	if msg != "" {
-		fmt.Fprintf(os.Stderr, msg, args...)
-		fmt.Fprintln(os.Stderr)
-	}
-}
 
 func toMap(filename string) (map[string]bool, error) {
 	log.LogVf("Reading %q", filename)
@@ -108,20 +93,11 @@ func main() {
 // it calling os.Exit directly means it doesn't work with the code coverage from `testscript`
 // but there is now (in 1.40) log.FErrf for that (no exit Fatalf).
 func Main() int {
-	flag.CommandLine.Usage = func() { usage("") }
-	log.SetFlagDefaultsForClientTools()
-	sV, longV, fullV := version.FromBuildInfo()
-	shortV = sV
-	flag.Parse()
-	if *fullVersion {
-		fmt.Print(fullV)
-		return 0
-	}
-	numArgs := len(flag.Args())
-	if numArgs != 2 {
-		usage("Need 2 arguments (old and new files), got %d (%v)", numArgs, flag.Args())
-		return 1
-	}
+	cli.Config.ProgramName = "Fortio delta"
+	cli.Config.MinArgs = 2
+	cli.Config.ArgsHelp = "fileA fileB" +
+		"\nwith command flags (-a and -b) space separated and the lines are passed as the last argument"
+	cli.Main()
 	cmdList := strings.Split(*aCmd, " ")
 	aCmd0 := cmdList[0]
 	aArgs := cmdList[1:]
@@ -135,7 +111,7 @@ func Main() int {
 	bArgs = append(bArgs, "ONLY_IN_A") // placeholder for later
 	hasBCmd := len(bCmd0) > 0
 	log.Infof("Fortio delta %s started - will run %q on entries unique to %s, and %q on ones unique to %s",
-		longV, *aCmd, flag.Arg(0), *bCmd, flag.Arg(1))
+		cli.Config.LongVersion, *aCmd, flag.Arg(0), *bCmd, flag.Arg(1))
 	// read file content into map
 	aSet, err := toMap(flag.Arg(0))
 	if err != nil {
