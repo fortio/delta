@@ -7,7 +7,7 @@ Diff 2 sets and apply command to deltas
 
 If you have golang, easiest install is 
 ```bash
-go install fortio.org/delta@latest
+go install github.com/fortio/delta@latest
 ```
 
 Or brew custom tap 
