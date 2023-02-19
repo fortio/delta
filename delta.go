@@ -93,9 +93,9 @@ func main() {
 // it calling os.Exit directly means it doesn't work with the code coverage from `testscript`
 // but there is now (in 1.40) log.FErrf for that (no exit Fatalf).
 func Main() int {
-	cli.Config.ProgramName = "Fortio delta"
-	cli.Config.MinArgs = 2
-	cli.Config.ArgsHelp = "fileA fileB" +
+	cli.ProgramName = "Fortio delta"
+	cli.MinArgs = 2
+	cli.ArgsHelp = "fileA fileB" +
 		"\nwith command flags (-a and -b) space separated and the lines are passed as the last argument"
 	cli.Main()
 	cmdList := strings.Split(*aCmd, " ")
@@ -111,7 +111,7 @@ func Main() int {
 	bArgs = append(bArgs, "ONLY_IN_A") // placeholder for later
 	hasBCmd := len(bCmd0) > 0
 	log.Infof("Fortio delta %s started - will run %q on entries unique to %s, and %q on ones unique to %s",
-		cli.Config.LongVersion, *aCmd, flag.Arg(0), *bCmd, flag.Arg(1))
+		cli.LongVersion, *aCmd, flag.Arg(0), *bCmd, flag.Arg(1))
 	// read file content into map
 	aSet, err := toMap(flag.Arg(0))
 	if err != nil {
