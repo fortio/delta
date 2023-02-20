@@ -3,7 +3,7 @@ module github.com/fortio/delta
 go 1.18
 
 require (
-	fortio.org/cli v0.6.2
+	fortio.org/cli v1.0.0
 	fortio.org/log v1.2.2
 	github.com/rogpeppe/go-internal v1.9.0
 )
