@@ -29,12 +29,10 @@ stderr 'F Error reading file B: open foo2: no such file or directory'
 delta -loglevel verbose -b 'echo NEW:' -a 'echo REMOVED:' oldFile newFile
 cmp stdout expected1
 stderr 'Fortio delta.*started - will run "echo REMOVED:" on entries unique to oldFile, and "echo NEW:" on ones unique to newFile'
-stderr 'Swapping A and B iteration order as B is smaller'
 
 # swapping a and b test
 delta -loglevel verbose -a 'echo NEW:' -b 'echo REMOVED:'  newFile oldFile
 cmp stdout expected2
-! stderr 'Swapping A and B iteration order as B is smaller'
 
 # command errors out (with -a)
 ! delta -a false oldFile newFile
