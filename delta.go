@@ -19,11 +19,11 @@ import (
 	"flag"
 	"os"
 	"os/exec"
-	"sort"
 	"strings"
 
 	"fortio.org/cli"
 	"fortio.org/log"
+	"fortio.org/sets"
 )
 
 var (
@@ -31,44 +31,21 @@ var (
 	bCmd = flag.String("b", "", "`Command` to run for each entry unique to file B")
 )
 
-func toMap(filename string) (map[string]bool, error) {
+func toMap(filename string) (sets.Set[string], error) {
 	log.LogVf("Reading %q", filename)
 	f, err := os.Open(filename)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
-	m := make(map[string]bool)
+	m := sets.New[string]()
 	sc := bufio.NewScanner(f)
 	for sc.Scan() {
 		entry := sc.Text()
 		log.LogVf("  adding %q", entry)
-		m[entry] = true
+		m.Add(entry)
 	}
 	return m, nil
-}
-
-func removeCommon(a, b map[string]bool) {
-	if len(a) > len(b) {
-		log.LogVf("Swapping A and B iteration order as B is smaller")
-		a, b = b, a
-	}
-	for e := range a {
-		if _, found := b[e]; found {
-			log.LogVf("in both sets: %q", e)
-			delete(a, e)
-			delete(b, e)
-		}
-	}
-}
-
-func sortedKeys(m map[string]bool) []string {
-	keys := make([]string, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	return keys
 }
 
 func runCmd(cmd0 string, args ...string) bool {
@@ -122,8 +99,8 @@ func Main() int {
 		return log.FErrf("Error reading file B: %v", err)
 	}
 	// remove common entries
-	removeCommon(aSet, bSet)
-	onlyInA := sortedKeys(aSet)
+	sets.RemoveCommon(aSet, bSet)
+	onlyInA := aSet.Sorted()
 	for _, a := range onlyInA {
 		log.Infof("Only in A: %q", a)
 		if hasACmd {
@@ -133,7 +110,7 @@ func Main() int {
 			}
 		}
 	}
-	onlyInB := sortedKeys(bSet)
+	onlyInB := bSet.Sorted()
 	for _, b := range onlyInB {
 		log.Infof("Only in B: %q", b)
 		if hasBCmd {
