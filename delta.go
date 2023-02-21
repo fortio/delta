@@ -100,7 +100,7 @@ func Main() int {
 	}
 	// remove common entries
 	sets.RemoveCommon(aSet, bSet)
-	onlyInA := aSet.Sorted()
+	onlyInA := sets.Sort(aSet)
 	for _, a := range onlyInA {
 		log.Infof("Only in A: %q", a)
 		if hasACmd {
@@ -110,7 +110,7 @@ func Main() int {
 			}
 		}
 	}
-	onlyInB := bSet.Sorted()
+	onlyInB := sets.Sort(bSet)
 	for _, b := range onlyInB {
 		log.Infof("Only in B: %q", b)
 		if hasBCmd {
