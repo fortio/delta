@@ -31,7 +31,7 @@ var (
 	bCmd = flag.String("b", "", "`Command` to run for each entry unique to file B")
 )
 
-func toMap(filename string) (sets.Set[string], error) {
+func setFromFile(filename string) (sets.Set[string], error) {
 	log.LogVf("Reading %q", filename)
 	f, err := os.Open(filename)
 	if err != nil {
@@ -90,11 +90,11 @@ func Main() int {
 	log.Infof("Fortio delta %s started - will run %q on entries unique to %s, and %q on ones unique to %s",
 		cli.LongVersion, *aCmd, flag.Arg(0), *bCmd, flag.Arg(1))
 	// read file content into map
-	aSet, err := toMap(flag.Arg(0))
+	aSet, err := setFromFile(flag.Arg(0))
 	if err != nil {
 		return log.FErrf("Error reading file A: %v", err)
 	}
-	bSet, err := toMap(flag.Arg(1))
+	bSet, err := setFromFile(flag.Arg(1))
 	if err != nil {
 		return log.FErrf("Error reading file B: %v", err)
 	}
