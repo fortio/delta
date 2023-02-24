@@ -5,7 +5,7 @@ go 1.18
 require (
 	fortio.org/cli v1.1.0
 	fortio.org/log v1.2.2
-	fortio.org/sets v1.0.0
+	fortio.org/sets v1.0.1
 	github.com/rogpeppe/go-internal v1.9.0
 )
 
