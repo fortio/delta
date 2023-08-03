@@ -17,12 +17,12 @@ stderr 'flag provided but not defined: -foo'
 
 # non existent input file A
 ! delta foo1 foo2
-stderr 'F Error reading file A: open foo1: no such file or directory'
+stderr '\[F\] Error reading file A: open foo1: no such file or directory'
 ! stdout .
 
 # non existent input file B
 ! delta oldFile foo2
-stderr 'F Error reading file B: open foo2: no such file or directory'
+stderr '\[F\] Error reading file B: open foo2: no such file or directory'
 ! stdout .
 
 # positive test (includes order of A/B iteration swap)
@@ -36,11 +36,11 @@ cmp stdout expected2
 
 # command errors out (with -a)
 ! delta -a false oldFile newFile
-stderr 'E Error running .*false gone 2: exit status 1'
+stderr '\[E\] Error running .*false gone 2: exit status 1'
 
 # command errors out (with -b)
 ! delta -b false oldFile newFile
-stderr 'E Error running .*false new1: exit status 1'
+stderr '\[E\] Error running .*false new1: exit status 1'
 
 -- expected1 --
 REMOVED: gone 2
