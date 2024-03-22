@@ -1,1 +1,4 @@
+.goreleaser.yaml
+.golangci.yml
 coverage.out
+delta
