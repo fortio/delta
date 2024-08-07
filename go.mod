@@ -5,7 +5,7 @@ go 1.18
 require (
 	fortio.org/cli v1.8.0
 	fortio.org/log v1.16.0
-	fortio.org/sets v1.1.1
+	fortio.org/sets v1.2.0
 	fortio.org/testscript v0.3.1
 )
 
