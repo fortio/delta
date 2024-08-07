@@ -5,9 +5,9 @@ Diff 2 sets and apply command to deltas
 
 ## Installation
 
-If you have golang, easiest install is 
+If you have golang, easiest install is (will also be the smallest binary thanks to build tags and other arguments)
 ```bash
-go install github.com/fortio/delta@latest
+CGO_ENABLED=0 go install -tags no_json,no_net -trimpath -ldflags "-w -s" github.com/fortio/delta@latest
 ```
 
 Or brew custom tap 
