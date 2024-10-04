@@ -3,8 +3,8 @@ module github.com/fortio/delta
 go 1.18
 
 require (
-	fortio.org/cli v1.9.0
-	fortio.org/log v1.16.0
+	fortio.org/cli v1.9.2
+	fortio.org/log v1.17.1
 	fortio.org/sets v1.2.0
 	fortio.org/testscript v0.3.2
 )
